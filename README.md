@@ -8,13 +8,24 @@ A collection of custom Claude skills for use with VS Code's GitHub Copilot and o
 
 VS Code 1.107+ supports reusing Claude skills natively. See the [official announcement](https://code.visualstudio.com/updates/v1_107#_reuse-your-claude-skills-experimental).
 
+## ⭐ Featured: Skill Creator
+
+The **[skill-creator](skill-creator/)** is a meta-skill that teaches Claude how to create other Claude skills. It provides comprehensive guidance on:
+
+- **Skill anatomy** — SKILL.md structure, frontmatter, and organization
+- **Progressive disclosure** — keeping context lean with references and scripts
+- **Best practices** — concise instructions, appropriate degrees of freedom
+- **Bundled resources** — when to use scripts, references, and assets
+
+> **Note:** The other skills in this repository (`fastapi-code-review`, `hpe-copyright`) were created using `skill-creator`. It's skills all the way down! 🐢
+
 ## Skills
 
 | Skill | Description |
 |-------|-------------|
-| [fastapi-code-review](fastapi-code-review/) | Comprehensive code review for FastAPI projects. Analyzes async patterns, project structure, Pydantic usage, dependency injection, database patterns, testing, and performance. Generates prioritized refactor plans. |
+| [skill-creator](skill-creator/) | **Meta-skill for creating skills.** Guide for creating effective Claude skills with proper structure, progressive disclosure patterns, and best practices. |
+| [fastapi-code-review](fastapi-code-review/) | Comprehensive code review for FastAPI projects. Analyzes async patterns, project structure, Pydantic usage, dependency injection, database patterns, testing, and performance. |
 | [hpe-copyright](hpe-copyright/) | Check, add, or fix HPE copyright headers in source files. Includes a Python script for batch processing and CI integration. |
-| [skill-creator](skill-creator/) | Guide for creating effective Claude skills. Covers skill anatomy, progressive disclosure patterns, and best practices for extending Claude's capabilities. |
 
 ## Installation
 
@@ -136,6 +147,10 @@ After installation:
 2. Create a new skill directory following the [skill-creator](skill-creator/) guidelines
 3. Add your `SKILL.md` with proper frontmatter (`name` and `description`)
 4. Submit a pull request
+
+## Attribution
+
+The `skill-creator` skill was sourced from [ComposioHQ/awesome-claude-skills](https://github.com/ComposioHQ/awesome-claude-skills), a curated list of practical Claude Skills maintained by [Composio](https://composio.dev/).
 
 ## License
 
