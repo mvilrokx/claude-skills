@@ -1,6 +1,6 @@
 ---
 name: jira-workflow
-description: Manage development work using Jira tickets as the single source of truth. Use this skill when users want to (1) list their Jira tickets/work backlog, (2) create new Jira tickets/work items, (3) assign tickets to team members, or (4) "do work" by implementing a Jira ticket—which involves creating a feature branch, implementing the changes, committing with ticket references, and updating the Jira ticket with progress. Triggers on phrases like "list my work", "show my tickets", "create a ticket", "add work", "assign PROJ-123 to", "do work", "work on PROJ-123", or "implement ticket".
+description: Manage development work using Jira tickets as the single source of truth. Use this skill when users want to (1) list their Jira tickets/work backlog, (2) create new Jira tickets/work items, (3) assign tickets to team members, (4) add labels to tickets, or (5) "do work" by implementing a Jira ticket—which involves creating a feature branch, implementing the changes, committing with ticket references, and updating the Jira ticket with progress. Triggers on phrases like "list my work", "show my tickets", "create a ticket", "add work", "assign PROJ-123 to", "add label", "do work", "work on PROJ-123", or "implement ticket".
 ---
 
 # Jira Workflow Skill
@@ -20,6 +20,8 @@ Manage development workflows using Jira tickets. Supports four core operations: 
 | "List my work" / "Show my tickets" | → [List Work](#list-work) |
 | "Create a ticket" / "Add work" | → [Create Work](#create-work) |
 | "Assign PROJ-123 to John" | → [Assign Work](#assign-work) |
+| "Add label to PROJ-123" | → [Manage Labels](#manage-labels) |
+| "List components" | → [List Components](#list-components) |
 | "Do work" / "Work on PROJ-123" | → [Do Work](#do-work) |
 
 ## List Work
@@ -51,20 +53,120 @@ Create a new Jira ticket.
 - Project key (or help user find it via `mcp_atlassian-mcp_getVisibleJiraProjects`)
 - Summary (ticket title)
 - Issue type (Story, Bug, Task, etc.)
+- Component (see [List Components](#list-components) for available options)
+
+**Mandatory fields (auto-populated):**
+
+- **Requested by (BU)**: Default to `GLCP`. User can override if needed.
+- **Labels**: Always include `created-by-github-copilot`. User can add additional labels.
 
 **Optional information:**
 
 - Description
 - Priority
 - Assignee
+- Additional labels
 
 **Steps:**
 
 1. Get Cloud ID if not cached
 2. Gather required fields from user
 3. If issue type unknown, fetch available types via issue metadata tools (activate with `activate_jira_issue_management_tools`)
-4. Create issue using `mcp_atlassian-mcp_createJiraIssue`
-5. Confirm creation with ticket key and link
+4. Check user preferences file for last-used component (see [User Preferences](#user-preferences))
+5. If no component provided and preference exists, suggest it; otherwise prompt user
+6. Create issue using `mcp_atlassian-mcp_createJiraIssue` with `additional_fields`:
+
+   ```json
+   {
+     "components": [{ "name": "<component-name>" }],
+     "customfield_XXXXX": { "value": "GLCP" },
+     "labels": ["created-by-github-copilot", "<user-labels>"]
+   }
+   ```
+
+7. Save selected component to user preferences
+8. Confirm creation with ticket key and link
+
+> **Note:** The custom field ID for "Requested by (BU)" varies by Jira instance. Discover it via issue metadata tools on first use.
+
+## List Components
+
+List available components for a project.
+
+**Trigger phrases:** "list components", "show components", "what components are available"
+
+**Steps:**
+
+1. Get Cloud ID
+2. Fetch project metadata via `activate_jira_issue_management_tools` to get components
+3. Display components in a table:
+
+```
+| Component | Description |
+|-----------|-------------|
+| Backend   | Server-side services |
+| Frontend  | UI components |
+| API       | REST API endpoints |
+```
+
+## Manage Labels
+
+Add or remove labels from a Jira ticket.
+
+**Trigger phrases:** "add label to PROJ-123", "label PROJ-123 with", "remove label from"
+
+**Steps:**
+
+1. Get Cloud ID
+2. Fetch current issue to get existing labels
+3. Add/remove requested labels
+4. Update issue using `mcp_atlassian-mcp_editJiraIssue`:
+
+   ```json
+   {
+     "fields": {
+       "labels": ["existing-label", "new-label"]
+     }
+   }
+   ```
+
+5. Confirm update
+
+**Output format:**
+
+```
+✅ Labels updated on PROJ-123:
+   Added: urgent, needs-review
+   Current: created-by-github-copilot, urgent, needs-review
+```
+
+## User Preferences
+
+Store user preferences in `.jira-workflow-prefs.json` in the workspace root.
+
+**Stored preferences:**
+
+```json
+{
+  "lastComponent": "Backend",
+  "defaultProject": "PROJ",
+  "requestedByBU": "GLCP"
+}
+```
+
+**Behavior:**
+
+- On **Create Work**: Check for `lastComponent`, suggest if present
+- On component selection: Update `lastComponent` in preferences
+- User can override `requestedByBU` default by saying "set requested by to X"
+
+**Preference commands:**
+
+- "Set my default component to Backend"
+- "Set my default project to PROJ"
+- "Set requested by to ACME"
+- "Show my preferences"
+- "Clear my preferences"
 
 ## Assign Work
 
@@ -180,6 +282,9 @@ Use `mcp_atlassian-mcp_addCommentToJiraIssue` for the update.
 | Ticket not found | Verify ticket key format and project access |
 | User not found | Verify name/email spelling, show similar matches |
 | Multiple user matches | Present options for user to select |
+| Component not found | List available components, ask user to select |
+| Invalid label format | Labels cannot contain spaces; suggest alternatives |
+| Custom field ID unknown | Fetch issue metadata to discover field IDs |
 | Dirty working tree | Prompt user to commit/stash changes first |
 | Branch already exists | Offer to checkout existing or create new |
 | Create issue fails | Check required fields and permissions |
