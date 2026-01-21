@@ -250,7 +250,10 @@ Derive `<type>` from issue type:
 <detailed description>
 
 Refs: <ticket-key>
+Co-authored-by: GitHub Copilot <noreply@github.com>
 ```
+
+The `Co-authored-by` trailer is a Git convention that GitHub recognizes and displays in the commit UI.
 
 Example:
 
@@ -261,6 +264,7 @@ Add login endpoint with JWT token generation and validation
 middleware for protected routes.
 
 Refs: PROJ-123
+Co-authored-by: GitHub Copilot <noreply@github.com>
 ```
 
 ### Jira Update Content

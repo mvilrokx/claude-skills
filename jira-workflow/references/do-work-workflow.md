@@ -160,7 +160,8 @@ This is the core development phase. Apply standard development practices:
 
    <body>
 
-   Refs: <ticket-key>"
+   Refs: <ticket-key>
+   Co-authored-by: GitHub Copilot <noreply@github.com>"
    ```
 
    **Type mapping:**
@@ -170,6 +171,8 @@ This is the core development phase. Apply standard development practices:
    - Documentation → `docs`
    - Refactor → `refactor`
    - Test → `test`
+
+   **Co-authored-by:** Always include this trailer. GitHub recognizes it and displays Copilot as a contributor in the commit history.
 
 3. Example commit:
 
@@ -181,7 +184,8 @@ This is the core development phase. Apply standard development practices:
    - Add authentication middleware for protected routes
    - Handle invalid credentials with proper error responses
 
-   Refs: PROJ-123"
+   Refs: PROJ-123
+   Co-authored-by: GitHub Copilot <noreply@github.com>"
    ```
 
 4. Confirm to user:
