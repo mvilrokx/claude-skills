@@ -214,6 +214,62 @@ Full development workflow: implement a Jira ticket with proper Git workflow and 
 - Confirm clean working tree (no uncommitted changes)
 - Verify Jira ticket exists and is accessible
 
+### Task Complexity Assessment
+
+Before starting implementation, assess the task complexity:
+
+**Break into subtasks when:**
+
+- Task involves multiple distinct components (e.g., API + UI + tests)
+- Estimated implementation time exceeds 2-3 hours
+- Multiple files across different domains need changes
+- Task has natural logical divisions (e.g., "setup", "core logic", "integration")
+
+**Keep as single task when:**
+
+- Simple bug fix or small feature
+- Changes localized to one area
+- Can be completed in under an hour
+
+### Subtask Workflow
+
+If task warrants breakdown:
+
+1. **Analyze and decompose** the parent ticket into logical subtasks
+2. **Create subtasks** in Jira using `mcp_atlassian-mcp_createJiraIssue` with:
+
+   ```json
+   {
+     "issueTypeName": "Sub-task",
+     "parent": "PROJ-123",
+     "summary": "<subtask summary>",
+     "labels": ["created-by-github-copilot"]
+   }
+   ```
+
+3. **Present subtask plan** to user for confirmation:
+
+   ```
+   📋 PROJ-123: Implement user authentication
+
+   Proposed subtasks:
+   1. PROJ-124: Set up authentication middleware
+   2. PROJ-125: Implement login endpoint
+   3. PROJ-126: Add JWT token generation
+   4. PROJ-127: Write integration tests
+
+   Proceed? (Y/n)
+   ```
+
+4. **Work on each subtask sequentially**:
+   - Implement subtask
+   - Commit with subtask reference
+   - Update subtask in Jira
+   - Transition subtask to Done
+5. **After all subtasks complete**, update and transition parent ticket
+
+See [references/do-work-workflow.md](references/do-work-workflow.md) for detailed implementation steps.
+
 ### Workflow Steps
 
 ```
@@ -244,6 +300,8 @@ Derive `<type>` from issue type:
 
 ### Commit Message Format
 
+**For single tasks or parent tickets:**
+
 ```
 <type>(<ticket-key>): <summary>
 
@@ -253,17 +311,32 @@ Refs: <ticket-key>
 Co-authored-by: GitHub Copilot <noreply@github.com>
 ```
 
-The `Co-authored-by` trailer is a Git convention that GitHub recognizes and displays in the commit UI.
-
-Example:
+**For subtasks (commit per subtask):**
 
 ```
-feat(PROJ-123): implement JWT authentication
+<type>(<subtask-key>): <summary>
 
-Add login endpoint with JWT token generation and validation
-middleware for protected routes.
+<detailed description>
 
-Refs: PROJ-123
+Refs: <subtask-key>
+Part-of: <parent-key>
+Co-authored-by: GitHub Copilot <noreply@github.com>
+```
+
+The `Co-authored-by` trailer is a Git convention that GitHub recognizes and displays in the commit UI.
+
+Example (subtask commit):
+
+```
+feat(PROJ-125): implement login endpoint
+
+Add POST /api/auth/login endpoint with:
+- Email/password validation
+- User lookup and password verification
+- Error responses for invalid credentials
+
+Refs: PROJ-125
+Part-of: PROJ-123
 Co-authored-by: GitHub Copilot <noreply@github.com>
 ```
 
@@ -289,6 +362,8 @@ Use `mcp_atlassian-mcp_addCommentToJiraIssue` for the update.
 | Component not found | List available components, ask user to select |
 | Invalid label format | Labels cannot contain spaces; suggest alternatives |
 | Custom field ID unknown | Fetch issue metadata to discover field IDs |
+| Subtask creation fails | Check if Sub-task issue type exists in project |
+| Parent ticket not found | Verify parent key when creating subtasks |
 | Dirty working tree | Prompt user to commit/stash changes first |
 | Branch already exists | Offer to checkout existing or create new |
 | Create issue fails | Check required fields and permissions |
