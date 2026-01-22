@@ -26,6 +26,7 @@ The **[skill-creator](skill-creator/)** is a meta-skill that teaches Claude how 
 | [skill-creator](skill-creator/) | **Meta-skill for creating skills.** Guide for creating effective Claude skills with proper structure, progressive disclosure patterns, and best practices. |
 | [fastapi-code-review](fastapi-code-review/) | Comprehensive code review for FastAPI projects. Analyzes async patterns, project structure, Pydantic usage, dependency injection, database patterns, testing, and performance. |
 | [hpe-copyright](hpe-copyright/) | Check, add, or fix HPE copyright headers in source files. Includes a Python script for batch processing and CI integration. |
+| [jira-workflow](jira-workflow/) | Manage development work using Jira tickets as the single source of truth. List tickets, create work items, assign work, add labels, and implement tickets with automated branching, commits, and Jira updates. |
 
 ## Installation
 
@@ -66,6 +67,7 @@ If you prefer to install manually:
 mkdir -p ~/.claude/skills
 cp -r fastapi-code-review ~/.claude/skills/
 cp -r hpe-copyright ~/.claude/skills/
+cp -r jira-workflow ~/.claude/skills/
 cp -r skill-creator ~/.claude/skills/
 ```
 
@@ -114,6 +116,11 @@ In agent mode with the `read-file` tool enabled, ask:
 **Skill Creator:**
 > "Help me create a new skill for database migration workflows"
 
+**Jira Workflow:**
+> "List my Jira tickets"
+> "Create a ticket for implementing user authentication"
+> "Do work on PROJ-123"
+
 > **Tip:** If the agent doesn't use a skill when expected, try nudging it: "Use your skills to help with this task."
 
 ## Directory Structure
@@ -130,6 +137,10 @@ After installation:
 │   ├── SKILL.md
 │   └── scripts/
 │       └── copyright_check.py
+├── jira-workflow/
+│   ├── SKILL.md
+│   └── references/
+│       └── do-work-workflow.md
 └── skill-creator/
     ├── SKILL.md
     ├── references/
